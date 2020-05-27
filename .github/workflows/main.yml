@@ -14,16 +14,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Build vyos-build docker image
+    - name: Pull VyOS Docker image
       run: |
         git clone -b crux --single-branch https://github.com/vyos/vyos-build
-        cd vyos-build
-        docker build -t vyos-builder docker
+        docker pull vyos/vyos:build:crux
     - name: Build iso
       run: |
-        docker run --rm --privileged -v $(pwd)/vyos-build:/vyos -w /vyos vyos-builder bash -c './configure --architecture amd64 --build-by "Hazaki" --build-type release 1.2.5 && sudo make iso'
+        docker run --rm -it --privileged -v $(pwd)/vyos-build:/vyos -w /vyos vyos/vyos:build:crux  bash -c './configure --architecture amd64 --build-by "Hazaki" --build-type release 1.2.5 && sudo make iso'
     - name: Persist created iso
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: vyos-lts
         path: 'vyos-build/build/live-image-amd64.hybrid.iso'
