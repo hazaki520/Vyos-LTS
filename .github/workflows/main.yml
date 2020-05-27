@@ -1,0 +1,29 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Build vyos-build docker image
+      run: |
+        git clone -b crux --single-branch https://github.com/vyos/vyos-build
+        cd vyos-build
+        docker build -t vyos-builder docker
+    - name: Build iso
+      run: |
+        docker run --rm --privileged -v $(pwd)/vyos-build:/vyos -w /vyos vyos-builder bash -c './configure --architecture amd64 --build-by "Hazaki" --build-type release 1.2.5 && sudo make iso'
+    - name: Persist created iso
+      uses: actions/upload-artifact@v1
+      with:
+        name: vyos-lts
+        path: 'vyos-build/build/live-image-amd64.hybrid.iso'
