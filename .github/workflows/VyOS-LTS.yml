@@ -20,7 +20,7 @@ jobs:
         docker pull vyos/vyos-build:crux
     - name: Build iso
       run: |
-        docker run --rm --privileged -v $(pwd)/vyos-build:/vyos -w /vyos vyos/vyos-build:crux  bash -c './configure --architecture amd64 --build-by "Hazaki" --build-type release --version 1.2.5 && sudo make iso'
+        docker run --rm --privileged -v $(pwd)/vyos-build:/vyos -w /vyos vyos/vyos-build:crux  bash -c './configure --architecture amd64 --build-by "Hazaki" --build-type release --version 1.2.5-sp1 && sudo make iso'
     - name: Persist created iso
       uses: actions/upload-artifact@v2
       with:
